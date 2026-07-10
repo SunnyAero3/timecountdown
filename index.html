@@ -240,7 +240,7 @@
         <div class="box">
             <h3>Countdown to Time (24h)</h3>
             <div class="input-group">
-                <input type="text" id="timeTarget" placeholder="18:00" maxlength="5">
+                <input type="text" id="timeTarget" placeholder="12:00" maxlength="5">
             </div>
             <div class="controls">
                 <button onclick="startRight()">Start</button>
@@ -332,7 +332,7 @@
                 rightRunning = true; 
                 document.getElementById('rightDisplay').classList.add('active-display');
             } else {
-                alert("Please type a valid 24h format (e.g., 18:00)");
+                alert("Please type a valid 24h format (e.g., 12:00)");
             }
         }
         function pauseRight() { 
