@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero Launch Dashboard</title>
+    <style>
+        body { 
+            display: flex; 
+            gap: 25px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 40px; 
+            /* Classic Frutiger Aero abstract nature/aurora background */
+            background: linear-gradient(135deg, #0f547a 0%, #1d9094 35%, #62c462 70%, #9bd871 100%);
+            background-attachment: fixed;
+            color: #ffffff;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        /* Aero Glass / Windows Sidebar Style Gadget Box */
+        .box { 
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 25px; 
+            width: 320px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glossy reflection overlay characteristic of Aero */
+        .box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            border-radius: 16px 16px 0 0;
+        }
+
+        h3 {
+            margin-top: 0;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* Skeuomorphic Glass Input Fields */
+        input { 
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            padding: 8px; 
+            border-radius: 6px;
+            width: 55px;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus {
+            border-color: #79d2ff;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(121, 210, 255, 0.6);
+        }
+
+        #timeTarget {
+            width: 100px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .controls { 
+            margin-top: 15px; 
+            margin-bottom: 20px; 
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* Glossy Aero Buttons */
+        button {
+            background: linear-gradient(to bottom, #52bdec 0%, #198fc5 50%, #0672a6 51%, #1281b5 100%);
+            border: 1px solid #145e82;
+            border-top: 1px solid #5fc5f4;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: filter 0.1s;
+        }
+        button:hover {
+            filter: brightness(1.1);
+        }
+        button:active {
+            background: linear-gradient(to bottom, #1281b5 0%, #0672a6 50%, #198fc5 51%, #52bdec 100%);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        button.pause { 
+            background: linear-gradient(to bottom, #fdd852 0%, #e5b31a 50%, #cb9706 51%, #dfab12 100%);
+            border-color: #a07405;
+            border-top-color: #ffe681;
+        }
+        button.reset { 
+            background: linear-gradient(to bottom, #f76f6f 0%, #dd2e2e 50%, #b21212 51%, #cc2424 100%);
+            border-color: #8c0c0c;
+            border-top-color: #ff9e9e;
+        }
+        
+        /* Windows Media Player Style Display Segment */
+        .display { 
+            font-size: 1.9em; 
+            font-weight: 600; 
+            font-family: 'Segoe UI', Helvetica, sans-serif;
+            color: #d1f1ff;
+            background: linear-gradient(to bottom, #071924 0%, #0d2838 100%);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1);
+            text-shadow: 0 0 6px rgba(162, 229, 255, 0.4);
+        }
+        
+        /* Clear digital glow when timer ticks down */
+        .active-display {
+            color: #3ef0ff !important;
+            text-shadow: 0 0 12px #00bdff, 0 0 25px #00bdff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h3>Custom Countdown</h3>
+        <div class="input-group">
+            <input type="number" id="days" placeholder="DD" min="0">
+            <input type="number" id="hours" placeholder="HH" min="0" max="23">
+            <input type="number" id="minutes" placeholder="MM" min="0" max="59">
+            <input type="number" id="seconds" placeholder="SS" min="0" max="59">
+        </div>
+        <div class="controls">
+            <button onclick="startLeft()">Start</button>
+            <button class="pause" onclick="pauseLeft()">Pause</button>
+            <button class="reset" onclick="resetLeft()">Reset</button>
+        </div>
+        <div id="leftDisplay" class="display">00d 00h 00m 00s</div>
+    </div>
+
+    <div class="box">
+        <h3>Countdown to Time (24h)</h3>
+        <div class="input-group">
+            <input type="text" id="timeTarget" placeholder="18:00" maxlength="5">
+        </div>
+        <div class="controls">
+            <button onclick="startRight()">Start</button>
+            <button class="pause" onclick="pauseRight()">Pause</button>
+            <button class="reset" onclick="resetRight()">Reset</button>
+        </div>
+        <div id="rightDisplay" class="display">00d 00h 00m 00s</div>
+    </div>
+
+    <script>
+        const audio = new Audio('TheFatRat - Xenogenesis (Outro Song).mp3');
+        let leftTimer;
+        let leftTimeLeft = 0, rightRunning = false;
+
+        // Auto-format tool for input masking (HH:MM)
+        document.getElementById('timeTarget').addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})/);
+            e.target.value = !x[2] ? x[1] : x[1] + ':' + x[2];
+        });
+
+        // Left Timer Logic
+        function startLeft() {
+            if (!leftTimer) {
+                if (leftTimeLeft === 0) {
+                    leftTimeLeft = (parseInt(document.getElementById('days').value || 0) * 86400) +
+                                   (parseInt(document.getElementById('hours').value || 0) * 3600) +
+                                   (parseInt(document.getElementById('minutes').value || 0) * 60) +
+                                   parseInt(document.getElementById('seconds').value || 0);
+                }
+                if(leftTimeLeft > 0) {
+                    document.getElementById('leftDisplay').classList.add('active-display');
+                    leftTimer = setInterval(() => {
+                        leftTimeLeft--;
+                        if (leftTimeLeft === 58) {
+                            audio.play().catch(err => console.log("Audio trigger active."));
+                        }
+                        updateLeftDisplay();
+                        if (leftTimeLeft <= 0) {
+                            clearInterval(leftTimer);
+                            leftTimer = null;
+                            document.getElementById('leftDisplay').classList.remove('active-display');
+                        }
+                    }, 1000);
+                }
+            }
+        }
+        function pauseLeft() { 
+            clearInterval(leftTimer); 
+            leftTimer = null; 
+            document.getElementById('leftDisplay').classList.remove('active-display');
+        }
+        function resetLeft() { 
+            pauseLeft(); 
+            leftTimeLeft = 0; 
+            updateLeftDisplay(); 
+        }
+        function updateLeftDisplay() {
+            let d = Math.floor(leftTimeLeft / 86400);
+            let h = Math.floor((leftTimeLeft % 86400) / 3600);
+            let m = Math.floor((leftTimeLeft % 3600) / 60);
+            let s = leftTimeLeft % 60;
+            document.getElementById('leftDisplay').textContent = 
+                `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+        }
+
+        // Right Timer Logic
+        function startRight() { 
+            const timeInput = document.getElementById('timeTarget').value;
+            if (timeInput.length === 5) {
+                rightRunning = true; 
+                document.getElementById('rightDisplay').classList.add('active-display');
+            } else {
+                alert("Please type a valid 24h format (e.g., 18:00)");
+            }
+        }
+        function pauseRight() { 
+            rightRunning = false; 
+            document.getElementById('rightDisplay').classList.remove('active-display');
+        }
+        function resetRight() { 
+            rightRunning = false; 
+            document.getElementById('rightDisplay').classList.remove('active-display');
+            document.getElementById('rightDisplay').textContent = "00d 00h 00m 00s"; 
+        }
+        
+        setInterval(() => {
+            if (!rightRunning) return;
+            const timeInput = document.getElementById('timeTarget').value; 
+            if (!timeInput) return;
+            
+            const now = new Date();
+            const target = new Date();
+            const [hours, minutes] = timeInput.split(':');
+            
+            target.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            if (target < now) target.setDate(target.getDate() + 1);
+            
+            const diff = target - now;
+            
+            let d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Convert everything to seconds to check if exactly 58 seconds are left
+            let totalSecondsLeft = Math.floor(diff / 1000);
+            if (totalSecondsLeft === 58) {
+                audio.play().catch(err => console.log("Audio trigger active."));
+            }
+
+            document.getElementById('rightDisplay').textContent = 
+                `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+                
+            if (diff <= 0) {
+                rightRunning = false;
+                document.getElementById('rightDisplay').classList.remove('active-display');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
